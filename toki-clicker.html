@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pupper-Clicker</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="bootstrap_theme.css">
+    <style>
+        body {
+            font-size: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="toki-app">
+            <div class="row py-5">
+                <div class="col-4 py-5">
+                    <h1 class="text-secondary">
+                        {{ message }}
+                    </h1>
+                </div>
+                <div class="col-4 py-5 mt-1">
+                    <h2>
+                       You currently have <span class="text-secondary">{{ displayTotal(treatTotal) }}</span> treats.
+                    </h2>
+                </div>
+                <div class="col-4 py-5">
+                    <button 
+                        class="btn btn-primary mx-5"
+                        @click="addClick"
+                    >
+                        <h3>Beg for Food ({{ displayTotal(clickFactor) }} treats)</h3>
+                    </button>
+                </div>
+            </div>
+            <div class="row">
+                <div 
+                    class="col-3 card py-5 text-center" 
+                    v-for="item in inventory" :key="item.name">
+                    <p class="mb-5">
+                        You have <span class="text-secondary">{{item.total }} </span>{{item.name}}s.
+                    </p>
+                    <button 
+                    class="btn btn-primary mb-5"
+                    @click="buyItem(item)"
+                >
+                    <h3>Buy a {{item.name}} ({{ displayTotal(item.price) }} treats)</h3>
+                    </button>
+                    <p v-if="item.clickMultiplier">Each {{item.name}} increases your
+                        treats per click by {{item.clickMultiplier}}.</p>
+                    </p>
+                    <div class="">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> 
+</body>
+<script>
+    let vm = new Vue({
+        el:'#toki-app',
+        data: {
+            message: 'Welcome to Pupper Clicker.',
+            treatTotal: 0,
+            clickFactor: 1,
+            inventory: {
+                dogFlaps: {
+                    'name': 'dog flap',
+                    'total': 0,
+                    'price': 5,
+                    'priceAugmenter': 1.1,
+                    'clickMultiplier': 0.1,
+                    'display': false,
+                    'showAt': 5.0,
+                },
+            },
+        },
+        methods: {
+            addClick() {
+                this.treatTotal = this.treatTotal + this.clickFactor;
+            },
+            displayTotal(numberToFormat) {
+                return numberToFormat.toFixed(1);
+            },
+            buyItem(item) {
+                if (item.price <= this.treatTotal) {
+                    item.total ++;
+                    this.treatTotal = this.treatTotal - item.price;
+                    item.price = item.price * item.priceAugmenter;
+                    if (item.clickMultiplier) {
+                        this.clickFactor = item.clickMultiplier + this.clickFactor;
+                    }
+                } else {
+                    pass;
+                }
+            },
+            revealItem(item) {
+                if (item.display == false && this.treatTotal >= item.showAt) {
+                        item.display = true;
+                }
+            }
+        },
+    });
+</script>
+</html>
